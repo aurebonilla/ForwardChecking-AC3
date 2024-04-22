@@ -1,5 +1,7 @@
 import pygame
 import tkinter
+import copy
+from variable import *
 from tkinter import *
 from tkinter.simpledialog import *
 from tkinter import messagebox as MessageBox
@@ -101,7 +103,64 @@ def imprimeAlmacen(almacen):
         for pal in lista:
             print (pal, end=" ")
         print()
-        
+
+#########################################################################
+# Devuelve el dominio asociado en función del tamaño
+######################################################################### 
+def addAsociado(almacen, tam):
+    return next((copy.deepcopy(i.lista) for i in almacen if i.tam == tam), None)
+#UTILIZO FUNCIÓN NEXT PARA DEVOLVER EL PRIMER ELEMENTO QUE CUMPLA LA CONDICIÓN, EN ESTE CASO EL TAMAÑO DEL DOMINIO, SI NO SE ENCUENTRA NINGUNO DEVUELVE NONE
+
+######################################################################### 
+# Contador variables
+######################################################################### 
+def contador_variables(tablero, almacen):
+    variables = []  
+    # Para contar las variables en dirección horizontal
+    for fila in range(tablero.getAlto()):
+        col = 0
+        while col < tablero.getAncho():
+            if tablero.Ocupada(fila, col):
+                col += 1
+            else:
+                longitud = 0
+                while col+longitud < tablero.getAncho() and not tablero.Ocupada(fila, col+longitud):
+                    longitud += 1
+                if longitud > 1:
+                        variables.append(Variable(fila, col, "h", addAsociado(almacen, longitud), longitud))
+                col += longitud
+
+    # Para contar las variables en dirección vertical
+    for col in range(tablero.getAncho()):
+        fila = 0
+        while fila < tablero.getAlto():
+            if tablero.Ocupada(fila, col):
+                fila += 1
+            else:
+                longitud = 0
+                while fila+longitud < tablero.getAlto() and not tablero.Ocupada(fila+longitud, col):
+                    longitud += 1
+                if longitud > 1:
+                    variables.append(Variable(fila, col, "v", addAsociado(almacen, longitud), longitud))
+                fila += longitud
+
+    return variables
+
+######################################################################### 
+# Print de variables disponibles
+######################################################################### 
+def print_variables(variables):
+    # Para imprimir la información de las variables encontradas
+    i=0
+    for variable in variables:
+        i=i+1
+        if(variable.ori == "h"): #Para poder imprimir la orientación de la variable de forma más clara
+            orien="horizontal"
+        else:
+            orien="vertical"
+
+        print(f"Nombre {i}: Posición {variable.fila}  {variable.col}, tipo: {orien}, Longitud: {variable.longitud}, dominio: {variable.tam}") 
+
 #########################################################################  
 # Principal
 #########################################################################
@@ -129,6 +188,7 @@ def main():
     botonReset=pygame.transform.scale(botonReset,[50,30])
     
     almacen=creaAlmacen()
+    imprimeAlmacen(almacen)
     game_over=False
     tablero=Tablero(FILS, COLS)    
     while not game_over:
@@ -140,6 +200,8 @@ def main():
                 pos=pygame.mouse.get_pos()                
                 if pulsaBotonFC(pos, anchoVentana, altoVentana):
                     print("FC")
+                    palabras=contador_variables(tablero, almacen)
+                    print_variables(palabras)
                     res=False #aquí llamar al forward checking
                     if res==False:
                         MessageBox.showwarning("Alerta", "No hay solución")                                  

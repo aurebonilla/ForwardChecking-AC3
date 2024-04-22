@@ -1,3 +1,6 @@
+from variable import * # Importo la clase Variable
+from main import * # Importo el main
+
 # Representa el crucigrama: medidas y matriz correspondiente a las celdas
 class Tablero:    
     def __init__(self, FILS, COLS):
@@ -36,3 +39,6 @@ class Tablero:
     def setCelda(self, fila, col, val):
         self.tablero[fila][col]=val    
     
+    #Para saber si la celda está ocupada
+    def Ocupada(self, fila, col):
+        return self.tablero[fila][col] != '-'
