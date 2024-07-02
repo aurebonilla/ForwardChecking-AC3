@@ -42,3 +42,7 @@ class Tablero:
     #Para saber si la celda está ocupada
     def Ocupada(self, fila, col):
         return self.tablero[fila][col] != '-'
+    
+    def Letra(self, fila, col):
+        return self.tablero[fila][col] != '*' and self.tablero[fila][col] != '-'
+    
